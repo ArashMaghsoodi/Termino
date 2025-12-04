@@ -9,7 +9,7 @@ function App() {
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute('dir', 'rtl');
-    root.classList.remove('light-theme', 'dark-theme');
+    root.classList.remove(theme === 'dark' ? 'light-theme' : 'dark-theme');
     root.classList.add(theme === 'dark' ? 'dark-theme' : 'light-theme');
     localStorage.setItem('termino-theme', theme);
   }, [theme]);
@@ -21,7 +21,7 @@ function App() {
         onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
       />
 
-      <main className="hero main-content">
+      <main className="hero">
         <div className="hero-card">
           <div>
             <h1>به ترمینو خوش آمدید</h1>

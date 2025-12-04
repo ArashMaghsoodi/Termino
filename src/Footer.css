@@ -3,8 +3,7 @@
   padding: 22px 20px;
   background: var(--bg-surface);
   color: var(--text-secondary);
-  margin-top: auto;
-  transition: background-color 0.45s ease, color 0.45s ease, border-color 0.45s ease;
+  margin-top: 40px;
 }
 
 .footer-inner {
