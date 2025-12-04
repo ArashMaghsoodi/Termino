@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Navbar from './Navbar.jsx';
 import Footer from './Footer.jsx';
-import './Global.css';
+import './App.css';
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('termino-theme') || 'dark');

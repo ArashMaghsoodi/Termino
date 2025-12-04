@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Navbar.css';
 
 function Navbar({ theme, onToggleTheme }) {
@@ -23,9 +23,12 @@ function Navbar({ theme, onToggleTheme }) {
     </svg>
   );
 
+  const userMenuRef = useRef(null);
+
   const authButtons = isLoggedIn ? (
-    <div className="user-menu">
+    <div className="user-menu" ref={userMenuRef}>
       <button className="user-trigger" onClick={() => setDropdownOpen((prev) => !prev)}>
+        <img className="avatar" src="/src/assets/react.svg" alt="avatar" />
         <span>نگار دانشجو</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="m6 9 6 6 6-6" />
@@ -52,22 +55,37 @@ function Navbar({ theme, onToggleTheme }) {
     </div>
   );
 
+  // close dropdown when clicking outside
+  useEffect(() => {
+    function handleOutside(e) {
+      if (!dropdownOpen) return;
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('pointerdown', handleOutside);
+    return () => document.removeEventListener('pointerdown', handleOutside);
+  }, [dropdownOpen]);
+
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        <div className="brand">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-            <rect x="4" y="3" width="16" height="18" rx="3" />
-            <path d="M4 8h16" />
-            <path d="M8 12h4" />
-          </svg>
-          <span>Termino</span>
-        </div>
+        <div className="left-group">
+          <div className="brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              <rect x="4" y="3" width="16" height="18" rx="3" />
+              <path d="M4 8h16" />
+              <path d="M8 12h4" />
+            </svg>
+            <span>ترمینو</span>
+          </div>
 
-        <nav className="nav-links" aria-label="primary">
-          <a href="#dashboard">داشبورد</a>
-          <a href="#guide">راهنما</a>
-        </nav>
+          <nav className="nav-links" aria-label="primary">
+            <a href="#dashboard">داشبورد</a>
+            <a href="#guide">راهنما</a>
+          </nav>
+        </div>
 
         <div className="actions">
           <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="تغییر تم">

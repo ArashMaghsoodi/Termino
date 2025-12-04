@@ -4,10 +4,10 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer-inner">
-        <span>© 1404 ترمینو - تمام حقوق محفوظ است</span>
+        <span>© ۱۴۰۴ ترمینو - تمام حقوق محفوظ است</span>
         <div className="footer-links">
           <a href="#about">درباره ما</a>
-          <span>•</span>
+          <span>●</span>
           <a href="#contact">تماس با ما</a>
         </div>
       </div>
