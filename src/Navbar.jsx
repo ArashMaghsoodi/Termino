@@ -55,21 +55,19 @@ function Navbar({ theme, onToggleTheme }) {
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        <div className="brand-block">
-          <div className="brand">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-              <rect x="4" y="3" width="16" height="18" rx="3" />
-              <path d="M4 8h16" />
-              <path d="M8 12h4" />
-            </svg>
-            <span>ترمینو</span>
-          </div>
-
-          <nav className="nav-links" aria-label="primary">
-            <a href="#dashboard">داشبورد</a>
-            <a href="#guide">راهنما</a>
-          </nav>
+        <div className="brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+            <rect x="4" y="3" width="16" height="18" rx="3" />
+            <path d="M4 8h16" />
+            <path d="M8 12h4" />
+          </svg>
+          <span>Termino</span>
         </div>
+
+        <nav className="nav-links" aria-label="primary">
+          <a href="#dashboard">داشبورد</a>
+          <a href="#guide">راهنما</a>
+        </nav>
 
         <div className="actions">
           <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="تغییر تم">
