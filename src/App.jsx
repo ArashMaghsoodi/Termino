@@ -21,45 +21,53 @@ function App() {
         onToggleTheme={() => setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'))}
       />
 
-      <main className="hero">
-        <div className="hero-card">
-          <div>
-            <h1>به ترمینو خوش آمدید</h1>
-            <p>انتخاب دروس و ساخت برنامه هفتگی اینجا</p>
+      <main>
+        <section className="hero">
+          <div className="hero-inner">
+            <div className="hero-card">
+              <div className="hero-card-content">
+                <h1>به ترمینو خوش آمدید</h1>
+                <p>انتخاب دروس و ساخت برنامه هفتگی اینجا</p>
+                <div className="hero-cta">
+                  <button className="primary-btn" type="button">
+                    شروع کنید
+                  </button>
+                  <a href="#dashboard" className="secondary-btn" style={{ alignSelf: 'center' }}>
+                    مشاهده داشبورد
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
+        </section>
 
-          <div className="highlight-card" id="dashboard">
-            <div className="highlight-item">
-              <h3>انتخاب دروس هوشمند</h3>
-              <p>دروس پیشنهادی را بر اساس علاقه، پیش‌نیاز و ظرفیت کلاس‌ها ببینید.</p>
+        <section className="features" aria-label="ویژگی‌ها">
+          <div className="features-inner">
+            <div className="section-head">
+              <span className="kicker">ویژگی‌های کلیدی</span>
+              <h2>ابزاری قدرتمند برای برنامه‌ریزی</h2>
+              <p>ترمینو با امکانات پیشرفته خود، شما را در انتخاب واحد و مدیریت برنامه تحصیلی یاری می‌کند.</p>
             </div>
-            <div className="highlight-item">
-              <h3>برنامه هفتگی شفاف</h3>
-              <p>چینش کلاس‌ها روی یک جدول زمانی روان، بدون تداخل و با یادآوری‌ها.</p>
-            </div>
-            <div className="highlight-item">
-              <h3>گزارش‌گیری سریع</h3>
-              <p>PDF برنامه، تعداد واحدها و وضعیت نهایی ثبت‌نام را یکجا دریافت کنید.</p>
-            </div>
-          </div>
 
-          <div className="callout" id="guide">
-            <div>
-              <h3 style={{ margin: '0 0 6px' }}>اولین قدم را بردارید</h3>
-              <p style={{ margin: 0, color: 'var(--text-secondary)' }}>
-                حساب کاربری بسازید، لیست دروس ترم را وارد کنید و ترمینو بقیه مسیر را مدیریت می‌کند.
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button className="primary-btn" type="button">
-                شروع ثبت‌نام
-              </button>
-              <button className="secondary-btn" type="button">
-                مشاهده راهنما
-              </button>
+            <div className="feature-cards">
+              <div className="feature-card">
+                <img className="feature-icon" src="/src/assets/schedule-48.png" alt="زمان‌بندی" />
+                <h3>تشخیص تداخل</h3>
+                <p>سیستم به صورت خودکار تداخل‌های زمانی بین دروس انتخابی را شناسایی می‌کند.</p>
+              </div>
+              <div className="feature-card">
+                <img className="feature-icon" src="/src/assets/diamond-48.png" alt="الماس" />
+                <h3>برنامه‌ساز هوشمند</h3>
+                <p>برنامه‌های هفتگی مختلف بسازید و بهترین گزینه را انتخاب کنید.</p>
+              </div>
+              <div className="feature-card">
+                <img className="feature-icon" src="/src/assets/book-shelf-48.png" alt="کتابخانه" />
+                <h3>کاتالوگ دروس</h3>
+                <p>جستجو و فیلتر پیشرفته در میان تمام دروس ارائه شده در دانشگاه.</p>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </main>
 
       <Footer />

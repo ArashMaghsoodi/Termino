@@ -17,31 +17,52 @@
 	background-image: url('/src/assets/BG-light.png');
 }
 
+/* Combined & fixed .hero – full-bleed stripe, vertically + horizontally centered content */
 .hero {
+  width: 100%;
+  padding: 80px 20px 48px;           /* keeps top/bottom spacing */
+  background: transparent;
+  display: flex;
+  align-items: center;              /* ← vertical centering */
+  justify-content: center;          /* ← ensures inner container is centered if narrower */
+  flex: 1;                          /* pushes footer down when content is short */
+}
+
+.hero-inner {
 	max-width: 1100px;
 	margin: 0 auto;
-	padding: 32px 20px 96px;
+	padding: 0 20px;
 	display: flex;
 	flex-direction: column;
 	gap: 18px;
 	align-items: center;
 	text-align: center;
-	flex: 1 1 auto;
 }
 
+/* Card inside the hero stripe (single consolidated rule) */
 .hero-card {
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	background: var(--bg-hero-card);
-	border: 1px solid var(--border);
-	border-radius: 20px;
-	box-shadow: var(--shadow);
-	padding: 32px 28px;
-	width: 100%;
-	max-width: 960px;
-	display: grid;
-	grid-template-columns: 1fr;
-	gap: 22px;
+  width: min(50vw, 90vw, 800px);   /* never wider than parent */
+  max-width: 1000px;        /* match .hero-inner */
+  margin: 0 auto;
+  border-radius: 18px;
+  padding: 40px 32px;           /* ↑ increase vertical padding a bit */
+  min-height: 300px;            /* ← prevents it from ever being too short */
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;   /* ← vertical center magic */
+  background: var(--bg-hero-card);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hero-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
 }
 
 .hero h1 {
@@ -50,11 +71,28 @@
 	margin: 0;
 	color: var(--text-primary);
 }
+.hero h1 {
+  font-family: 'Kalameh', 'Vazirmatn', sans-serif;
+  font-size: clamp(32px, 5vw, 46px);
+  margin: 0;
+  color: var(--text-primary);
+}
 
 .hero p {
 	margin: 0;
 	font-size: 18px;
 	color: var(--text-secondary);
+}
+.hero p {
+	margin: 0;
+	font-size: 18px;
+	color: var(--text-secondary);
+}
+
+.hero-cta {
+	display: flex;
+	gap: 12px;
+	margin-top: 8px;
 }
 
 .highlight-card {
@@ -66,6 +104,83 @@
 	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 	gap: 18px;
 }
+.features {
+	width: 100%;
+	/* make transparent so the app-shell background image continues under this section */
+	background: transparent;
+	padding: 44px 0 64px;
+}
+
+.features-inner {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.section-head {
+	text-align: center;
+	margin-bottom: 26px;
+}
+
+.kicker {
+	display: inline-block;
+	background: rgba(0,0,0,0.12);
+	color: var(--text-secondary);
+	padding: 6px 10px;
+	border-radius: 999px;
+	font-size: 13px;
+	margin-bottom: 12px;
+}
+
+.features-inner h2 {
+	margin: 6px 0 6px;
+	color: var(--text-primary);
+}
+
+.feature-cards {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+
+.feature-card {
+	background: var(--bg-feature-card);
+	border-radius: 12px;
+	padding: 20px;
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow);
+	color: var(--text-primary);
+}
+
+.feature-card h3 {
+	margin: 0 0 8px;
+	text-align: start;
+}
+.feature-card .feature-icon {
+	width: 48px;
+	height: 48px;
+	display: inline-block;                 /* allow icon + title on same line */
+	vertical-align: middle;                /* align with the title baseline */
+	object-fit: contain;                   /* preserve aspect ratio and fit inside box */
+	flex-shrink: 0;
+	margin-inline-start: 0;                /* remove start offset so icon sits flush with card padding */
+	margin-inline-end: 12px;               /* spacing between icon and title (RTL-aware) */
+	margin-bottom: 0;                      /* ensure no extra gap under the icon */
+	filter: var(--feature-icon-filter, none);
+}
+
+/* Put the icon and the title on the same line */
+.feature-card > h3 {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0;                              /* remove default margin so it lines up cleanly */
+}
+
+/* Ensure the description always flows beneath the header row */
+.feature-card > p {
+	margin-top: 12px;
+}
+
 
 .highlight-item {
 	background: var(--bg-surface);
@@ -109,11 +224,12 @@
 }
 
 .primary-btn:hover {
-	background: var(--accent-strong);
+	background: var(--accent-hover);
 	transform: translateY(-1px);
 }
 
 .secondary-btn {
+    transition: ease-in-out 0.2s;
 	background: transparent;
 	color: var(--text-primary);
 	padding: 10px 16px;
@@ -122,10 +238,20 @@
 }
 
 .secondary-btn:hover {
-	border-color: var(--accent);
-	color: var(--accent);
+    transition: ease-in-out 0.2s;
+	border-color: var(--accent-hover);
+	color: var(--accent-hover);
 }
 
+/*
+	Responsive breakpoints
+
+	- Desktop: default styles (no media query)
+	- Tablet: apply rules at viewport widths <= 900px
+	- Mobile: apply rules at viewport widths <= 768px
+*/
+
+/* Mobile breakpoint (<= 768px) */
 @media (max-width: 768px) {
 	.hero-card {
 		padding: 26px 20px;
@@ -135,5 +261,16 @@
 		flex-direction: column;
 		align-items: flex-start;
 	}
+}
+
+/* Tablet breakpoint (<= 900px) */
+@media (max-width: 900px) {
+  .feature-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 44px 0 32px;
+  }
 }
 

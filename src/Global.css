@@ -9,31 +9,45 @@
 }
 
 .light-theme {
-  --bg-navbar: rgba(255, 255, 255, 0.7);
-  --bg-primary: #f7f7fb;
-  --bg-surface: rgba(255, 255, 255, 0.9);
-  --bg-hero-card: rgba(255, 255, 255, 0.7);
-  --bg-hover: #ededff;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --accent: #7c3aed;
-  --accent-strong: #5b21b6;
-  --border: #e2e8f0;
-  --shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
+  --bg-primary: #C5D5D0; /* soft mint gray */
+  --bg-surface: rgb(10, 123, 110); /* clean white for cards/surfaces */
+  --bg-navbar: rgb(192, 255, 248, 0.7);
+  --bg-hero-card: rgba(111, 222, 255, 0.18);
+  --bg-feature-card: rgba(219, 237, 255, 0.306);
+  --bg-hover: rgba(5, 97, 118, 0.075); /* subtle hover overlay */
+  --text-primary: #2d3231; /* charcoal gray */
+  --text-secondary: #186c62; /* muted teal */
+  --accent: #028878; /* emerald */
+  --accent-hover: #109487; /* light cyan (hover) */
+  --accent-light: #2FD6C0; /* lighter accent for subtle UI */
+  --accent-very-light: #C8FBF4; /* very light accent */
+  --accent-text: #ffffff; /* text placed on accent backgrounds */
+  --border: rgba(67, 69, 68, 0.3); /* subtle border */
+  --subtle-border-rgba: rgba(197, 213, 208, 1);
+  --shadow: 0 12px 40px rgba(15, 23, 42, 0.06);
+  --icon: #9df4f3;
+  --icon-hover: #f4fdff;
 }
 
 .dark-theme {
-  --bg-navbar: rgba(18, 28, 51, 0.7);
   --bg-primary: #0b1222;
   --bg-surface: rgba(18, 28, 51, 0.9);
-  --bg-hover: #19213e;
-  --bg-hero-card: rgba(18, 28, 51, 0.7);
-  --text-primary: #e2e8f0;
-  --text-secondary: #cbd5e1;
-  --accent: #a855f7;
-  --accent-strong: #c084fc;
-  --border: #1f2a44;
-  --shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --bg-navbar: rgba(29, 41, 72, 0.4);
+  --bg-primary: #1C398B; /* deep indigo */
+  --bg-surface: #006785; /* navy base for cards/surfaces */
+  --bg-hero-card: rgba(0, 103, 133, 0.18);
+  --bg-hover: rgba(255,255,255,0.075);
+  --text-primary: #FFFFFF; /* pure white */
+  --text-secondary: #c1ffec; /* warm off-white */
+  --accent: #2898b4; /* turquoise */
+  --accent-hover: #089282; /* emerald teal on hover */
+  --accent-light: #7FEFEF; /* lighter turquoise */
+  --accent-very-light: #CFF9F8;
+  --accent-text: #ffffff;
+  --icon: #b0efff;
+  --border: rgba(28,57,139,0.3); /* subtle border with 30% opacity */
+  --subtle-border-rgba: rgba(28,57,139,0.2);
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
 * {
@@ -46,7 +60,7 @@ body {
   padding: 0;
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: background 0.3s ease, color 0.3s ease;
+  transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
 }
 
 a {
@@ -55,7 +69,7 @@ a {
 }
 
 a:hover {
-  color: var(--accent);
+  color: var(--accent-hover);
 }
 
 button {

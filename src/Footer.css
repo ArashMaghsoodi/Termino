@@ -1,7 +1,7 @@
 .footer {
   border-top: 1px solid var(--border);
   padding: 18px 20px;
-  background: var(--bg-surface);
+  background: var(--bg-feature-card);
   color: var(--text-secondary);
   margin-top: 0;
 }
@@ -32,6 +32,7 @@
 }
 
 .footer a {
+  transition: ease-in-out 0.3s;
   padding: 5px 8px;
   border-radius: 10px;
   color: var(--text-primary);
@@ -39,6 +40,7 @@
 }
 
 .footer a:hover {
+  transition: ease-in-out 0.3s;
   transition: ease-in-out 0.2s;
   background: var(--bg-hover);
   color: var(--accent);

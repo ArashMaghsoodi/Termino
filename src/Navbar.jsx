@@ -34,15 +34,13 @@ function Navbar({ theme, onToggleTheme }) {
           <path d="m6 9 6 6 6-6" />
         </svg>
       </button>
-      {dropdownOpen && (
-        <div className="dropdown">
-          <button type="button">پروفایل</button>
-          <button type="button">تنظیمات</button>
-          <button type="button" onClick={() => setIsLoggedIn(false)}>
-            خروج
-          </button>
-        </div>
-      )}
+      <div className={`dropdown ${dropdownOpen ? 'open' : ''}`} aria-hidden={!dropdownOpen}>
+        <button type="button">پروفایل</button>
+        <button type="button">تنظیمات</button>
+        <button type="button" onClick={() => setIsLoggedIn(false)}>
+          خروج
+        </button>
+      </div>
     </div>
   ) : (
     <div className="actions">
@@ -119,15 +117,13 @@ function Navbar({ theme, onToggleTheme }) {
                     <path d="m6 9 6 6 6-6" />
                   </svg>
                 </button>
-                {dropdownOpen && (
-                  <div className="dropdown">
-                    <button type="button">پروفایل</button>
-                    <button type="button">تنظیمات</button>
-                    <button type="button" onClick={() => setIsLoggedIn(false)}>
-                      خروج
-                    </button>
-                  </div>
-                )}
+                <div className={`dropdown ${dropdownOpen ? 'open' : ''}`} aria-hidden={!dropdownOpen}>
+                  <button type="button">پروفایل</button>
+                  <button type="button">تنظیمات</button>
+                  <button type="button" onClick={() => setIsLoggedIn(false)}>
+                    خروج
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="actions" style={{ display: 'flex' }}>
