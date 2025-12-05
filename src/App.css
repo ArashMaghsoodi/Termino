@@ -41,7 +41,7 @@
 
 /* Card inside the hero stripe (single consolidated rule) */
 .hero-card {
-  width: min(50vw, 90vw, 800px);   /* never wider than parent */
+  width: min(50vw, 100vw, 1000px);   /* never wider than parent */
   max-width: 1000px;        /* match .hero-inner */
   margin: 0 auto;
   border-radius: 18px;

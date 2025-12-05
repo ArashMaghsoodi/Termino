@@ -25,6 +25,25 @@ function Navbar({ theme, onToggleTheme }) {
 
   const userMenuRef = useRef(null);
 
+  // close mobile menu when viewport becomes wider than the mobile breakpoint
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const mq = window.matchMedia('(min-width: 901px)');
+    function handleMatch(e) {
+      if (e.matches) {
+        setMenuOpen(false);
+      }
+    }
+    // ensure menu is closed when we mount on wide screens
+    if (mq.matches) setMenuOpen(false);
+    if (mq.addEventListener) mq.addEventListener('change', handleMatch);
+    else mq.addListener(handleMatch);
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', handleMatch);
+      else mq.removeListener(handleMatch);
+    };
+  }, []);
+
   const authButtons = isLoggedIn ? (
     <div className="user-menu" ref={userMenuRef}>
       <button className="user-trigger" onClick={() => setDropdownOpen((prev) => !prev)}>
@@ -57,7 +76,9 @@ function Navbar({ theme, onToggleTheme }) {
   useEffect(() => {
     function handleOutside(e) {
       if (!dropdownOpen) return;
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+      // Use DOM traversal to detect clicks outside any `.user-menu` container.
+      // This handles both the header user-menu and the mobile menu user-menu.
+      if (!e.target.closest || !e.target.closest('.user-menu')) {
         setDropdownOpen(false);
       }
     }
@@ -93,7 +114,7 @@ function Navbar({ theme, onToggleTheme }) {
         </div>
 
         <button className="menu-toggle" type="button" onClick={() => setMenuOpen((prev) => !prev)} aria-label="بازکردن منو">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
             <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
@@ -105,33 +126,41 @@ function Navbar({ theme, onToggleTheme }) {
                 <a href="#dashboard">داشبورد</a>
                 <a href="#guide">راهنما</a>
               </div>
-              <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="تغییر تم">
-                {themeIcon}
-              </button>
             </div>
+
             {isLoggedIn ? (
-              <div className="user-menu">
-                <button className="user-trigger" onClick={() => setDropdownOpen((prev) => !prev)}>
-                  <span>نگار دانشجو</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </button>
-                <div className={`dropdown ${dropdownOpen ? 'open' : ''}`} aria-hidden={!dropdownOpen}>
-                  <button type="button">پروفایل</button>
-                  <button type="button">تنظیمات</button>
-                  <button type="button" onClick={() => setIsLoggedIn(false)}>
-                    خروج
+              <div className="mobile-actions">
+                <div className="user-menu" ref={userMenuRef}>
+                  <button className="user-trigger" onClick={() => setDropdownOpen((prev) => !prev)}>
+                    <img className="avatar" src="/src/assets/react.svg" alt="avatar" />
+                    <span>نگار دانشجو</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
                   </button>
+                  <div className={`dropdown ${dropdownOpen ? 'open' : ''}`} aria-hidden={!dropdownOpen}>
+                    <button type="button">پروفایل</button>
+                    <button type="button">تنظیمات</button>
+                    <button type="button" onClick={() => setIsLoggedIn(false)}>
+                      خروج
+                    </button>
+                  </div>
                 </div>
+
+                <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="تغییر تم">
+                  {themeIcon}
+                </button>
               </div>
             ) : (
-              <div className="actions" style={{ display: 'flex' }}>
+              <div className="mobile-actions" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <button className="auth-btn secondary" type="button">
                   ثبت نام
                 </button>
                 <button className="auth-btn primary" type="button" onClick={() => setIsLoggedIn(true)}>
                   ورود به حساب
+                </button>
+                <button className="theme-toggle" type="button" onClick={onToggleTheme} aria-label="تغییر تم">
+                  {themeIcon}
                 </button>
               </div>
             )}

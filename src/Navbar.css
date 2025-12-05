@@ -27,7 +27,7 @@
 }
 
 .navbar-inner {
-  width: 90%;
+  width: 97%;
   max-width: 1920px;
   margin: 0 auto;
   padding: 12px 12px;
@@ -160,7 +160,9 @@
 .dropdown {
   position: absolute;
   top: 110%;
-  left: 0;
+  /* use logical inset so alignment respects RTL/LTR and anchors under the trigger */
+  inset-inline-start: 0;
+  inset-inline-end: auto;
   min-width: 170px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -217,8 +219,10 @@
     gap: 12px;
   }
 
+  /* Keep primary nav links visible on mobile so they stay next to the brand */
   .nav-links {
-    display: none;
+    display: flex;
+    gap: 8px;
   }
 
   .actions {
@@ -245,9 +249,36 @@
     gap: 12px;
   }
 
+  /* hide duplicate links inside the mobile menu when desktop/mobile primary nav is shown */
   .mobile-links {
-    display: flex;
+    display: none;
     gap: 10px;
+  }
+
+  /* Mobile-only actions row inside the opened mobile menu */
+  .mobile-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    justify-content: flex-start; /* place items starting edge; we'll push theme-toggle to the end */
+  }
+
+  /* Put auth buttons first and theme toggle at the far end (mobile only) */
+  .mobile-actions .auth-btn {
+    order: 1;
+  }
+
+  .mobile-actions .theme-toggle {
+    order: 2;
+    /* create flexible gap so the theme-toggle sits at the end of the row */
+    margin-inline-start: auto;
+  }
+
+  /* When user is logged in, the mobile-actions will contain a .user-menu.
+     Ensure the user-menu sits at the start of the row so the toggle stays at the end. */
+  .mobile-actions .user-menu {
+    order: 1;
   }
 }
 
