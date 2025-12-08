@@ -1,7 +1,7 @@
 .footer {
   border-top: 1px solid var(--border);
   padding: 18px 20px;
-  background: var(--bg-feature-card);
+  background: var(--bg-footer);
   color: var(--text-secondary);
   margin-top: 0;
 }

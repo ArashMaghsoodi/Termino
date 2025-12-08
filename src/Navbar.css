@@ -85,8 +85,8 @@
 }
 
 .theme-toggle {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
@@ -141,12 +141,12 @@
   background: var(--bg-surface);
   border: 1px solid var(--border);
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--accent-light);
 }
 
 .user-trigger:hover {
   border-color: var(--accent-very-light);
-  color: var(--text-primary);
+  color: var(--accent-very-light);
 }
 
 .user-trigger .avatar {
@@ -192,7 +192,7 @@
   background: transparent;
   padding: 10px 12px;
   border-radius: 8px;
-  color: var(--text-primary);
+  color: white;
 }
 
 .dropdown button:hover {
@@ -240,6 +240,11 @@
     display: grid;
     gap: 10px;
     animation: fadeDown 0.25s ease;
+  }
+
+  .mobile-menu.closing {
+    animation: fadeUp 0.2s ease forwards;
+    pointer-events: none; /* avoid clicks during exit */
   }
 
   .mobile-row {
@@ -290,5 +295,16 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
   }
 }

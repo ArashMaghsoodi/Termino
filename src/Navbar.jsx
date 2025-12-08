@@ -3,8 +3,12 @@ import './Navbar.css';
 
 function Navbar({ theme, onToggleTheme }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [menuClosing, setMenuClosing] = useState(false); // for exit animation
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const userMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null); // ref for mobile menu container
 
   useEffect(() => {
     if (!menuOpen) {
@@ -12,37 +16,72 @@ function Navbar({ theme, onToggleTheme }) {
     }
   }, [menuOpen]);
 
-  const themeIcon = theme === 'dark' ? (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="12" cy="12" r="5" />
-      <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
-    </svg>
-  );
-
-  const userMenuRef = useRef(null);
+  const themeIcon =
+    theme === 'dark' ? (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+      </svg>
+    ) : (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+      </svg>
+    );
 
   // close mobile menu when viewport becomes wider than the mobile breakpoint
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
     const mq = window.matchMedia('(min-width: 901px)');
+
     function handleMatch(e) {
       if (e.matches) {
         setMenuOpen(false);
+        setMenuClosing(false); // reset closing state on resize
       }
     }
+
     // ensure menu is closed when we mount on wide screens
-    if (mq.matches) setMenuOpen(false);
+    if (mq.matches) {
+      setMenuOpen(false);
+      setMenuClosing(false);
+    }
+
     if (mq.addEventListener) mq.addEventListener('change', handleMatch);
     else mq.addListener(handleMatch);
+
     return () => {
       if (mq.removeEventListener) mq.removeEventListener('change', handleMatch);
       else mq.removeListener(handleMatch);
     };
   }, []);
+
+  // Handle mobile menu open/close with animation
+  const handleMenuToggle = () => {
+    if (!menuOpen) {
+      // opening
+      setMenuOpen(true);
+      setMenuClosing(false);
+    } else {
+      // start closing animation
+      setMenuClosing(true);
+    }
+  };
+
+  // Attach animationend listener when we're in closing state
+  useEffect(() => {
+    const el = mobileMenuRef.current;
+    if (!el || !menuClosing) return;
+
+    const handleAnimationEnd = (e) => {
+      // optional: check specific animation name if you want
+      // if (e.animationName !== 'fadeUp') return;
+      setMenuOpen(false);      // unmount menu
+      setMenuClosing(false);   // reset state
+    };
+
+    el.addEventListener('animationend', handleAnimationEnd);
+    return () => el.removeEventListener('animationend', handleAnimationEnd);
+  }, [menuClosing]);
 
   const authButtons = isLoggedIn ? (
     <div className="user-menu" ref={userMenuRef}>
@@ -77,7 +116,6 @@ function Navbar({ theme, onToggleTheme }) {
     function handleOutside(e) {
       if (!dropdownOpen) return;
       // Use DOM traversal to detect clicks outside any `.user-menu` container.
-      // This handles both the header user-menu and the mobile menu user-menu.
       if (!e.target.closest || !e.target.closest('.user-menu')) {
         setDropdownOpen(false);
       }
@@ -113,14 +151,22 @@ function Navbar({ theme, onToggleTheme }) {
           {authButtons}
         </div>
 
-        <button className="menu-toggle" type="button" onClick={() => setMenuOpen((prev) => !prev)} aria-label="بازکردن منو">
+        <button
+          className="menu-toggle"
+          type="button"
+          onClick={handleMenuToggle}
+          aria-label="بازکردن منو"
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
             <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
 
         {menuOpen && (
-          <div className="mobile-menu">
+          <div
+            className={`mobile-menu ${menuClosing ? 'closing' : ''}`}
+            ref={mobileMenuRef}
+          >
             <div className="mobile-row">
               <div className="mobile-links">
                 <a href="#dashboard">داشبورد</a>

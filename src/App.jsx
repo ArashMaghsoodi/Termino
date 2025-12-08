@@ -68,6 +68,23 @@ function App() {
             </div>
           </div>
         </section>
+
+        <section className="demo">
+          <div className="demo-inner" style={{ display: 'flex', alignItems: 'center' }}>
+            <div className="demo-video" style={{ flex: 1 }}>
+              <video
+                src="/src/assets/demo.gif"
+                autoPlay
+                muted
+                style={{ width: '100%', borderRadius: '8px' }}
+              />
+            </div>
+            <div className="demo-text" style={{ flex: 1, padding: '0 20px' }}>
+              <h2>Demo</h2>
+              <p>Watch how Termino helps you plan smarter.</p>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />
