@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #fbfaf7;
+  --paper-raised: #ffffff;
+  --ink: #1d1b18;
+  --slate: #5f6164;
+  --slate-soft: #7d7f84;
+  --line: #e8e4da;
+  --marker: #fdde59;
+  --marker-ink: #55490a;
+  --open-slot: #dff6e4;
+  --conflict: #cf4a4a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-vazirmatn), 'Tahoma', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.font-display {
+  font-family: var(--font-vazirmatn), 'Tahoma', sans-serif;
+}
+
+.font-mono-num {
+  font-family: var(--font-inter), monospace;
+}
+
+.bg-paper { background-color: var(--paper); }
+.bg-paper-raised { background-color: var(--paper-raised); }
+.bg-ink { background-color: var(--ink); }
+.bg-marker { background-color: var(--marker); }
+.bg-open-slot { background-color: var(--open-slot); }
+.bg-conflict { background-color: var(--conflict); }
+
+.text-ink { color: var(--ink); }
+.text-slate { color: var(--slate); }
+.text-slate-soft { color: var(--slate-soft); }
+.text-marker { color: var(--marker); }
+.text-marker-ink { color: var(--marker-ink); }
+.text-open-slot { color: var(--open-slot); }
+.text-conflict { color: var(--conflict); }
+.text-paper { color: var(--paper); }
+
+.border-line { border-color: var(--line); }
+.border-ink { border-color: var(--ink); }
+
+.shadow-ink\/5 { box-shadow: 0 10px 30px rgba(29, 27, 24, 0.05); }
+.shadow-ink\/\[0\.06\] { box-shadow: 0 18px 55px rgba(29, 27, 24, 0.06); }
+.shadow-ink\/\[0\.04\] { box-shadow: 0 12px 35px rgba(29, 27, 24, 0.04); }
