@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown, User, Settings, LogOut, Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
   { href: "#features", label: "امکانات" },
@@ -26,10 +27,13 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-sm">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
-        {/* Logo */}
-        <a href="/" className="font-display text-lg font-bold tracking-tight text-ink">
-          ترمینو<span className="text-marker">.</span>
-        </a>
+        {/* Logo + theme toggle */}
+        <div className="flex items-center gap-3">
+          <a href="/" className="font-display text-lg font-bold tracking-tight text-ink">
+            ترمینو<span className="text-marker">.</span>
+          </a>
+          <ThemeToggle />
+        </div>
 
         {/* Desktop links */}
         <div className="hidden items-center gap-8 md:flex">

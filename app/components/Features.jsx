@@ -42,9 +42,17 @@ export default function Features() {
             >
               <div
                 className="flex h-11 w-11 items-center justify-center rounded-xl"
-                style={{ background: `color-mix(in srgb, ${f.color} 18%, transparent)` }}
+                style={{ background: `color-mix(in srgb, ${f.color} 22%, transparent)` }}
               >
-                <f.icon size={20} style={{ color: f.color === "var(--marker)" ? "var(--marker-ink)" : f.color }} />
+                <f.icon
+                  size={20}
+                  style={{
+                    color:
+                      f.color === "var(--marker)"
+                        ? "var(--marker-ink)"
+                        : `color-mix(in srgb, ${f.color} 82%, black 18%)`,
+                  }}
+                />
               </div>
               <h3 className="font-display mt-5 text-lg font-bold text-ink">{f.title}</h3>
               <p className="mt-2 text-sm leading-7 text-slate">{f.desc}</p>

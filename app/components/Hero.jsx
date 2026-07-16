@@ -3,15 +3,16 @@
 import { useEffect, useState } from "react";
 
 const DAYS = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+const HOUR_COLS = ["06", "08", "10", "12", "14", "16", "18"]; // each column = 2 hours
 
-// row(1-indexed), day-index, col-span, color, delay(ms)
+// day (row index), hourCol (column start index into HOUR_COLS), span (number of 2h columns), color
 const BLOCKS = [
-  { row: 1, day: 0, span: 2, color: "var(--marker)" },
-  { row: 3, day: 0, span: 2, color: "var(--open-slot)" },
-  { row: 1, day: 2, span: 3, color: "var(--open-slot)" },
-  { row: 5, day: 1, span: 2, color: "var(--marker)" },
-  { row: 2, day: 4, span: 2, color: "var(--open-slot)" },
-  { row: 4, day: 5, span: 3, color: "var(--marker)" },
+  { day: 0, hourCol: 0, span: 1, color: "var(--marker)" },
+  { day: 1, hourCol: 4, span: 1, color: "var(--conflict)" },
+  { day: 2, hourCol: 1, span: 2, color: "var(--open-slot)" },
+  { day: 4, hourCol: 2, span: 1, color: "var(--open-slot)" },
+  { day: 5, hourCol: 3, span: 2, color: "var(--marker)" },
+  { day: 6, hourCol: 0, span: 1, color: "var(--open-slot)" },
 ];
 
 export default function Hero() {
@@ -26,22 +27,27 @@ export default function Hero() {
           <span className="inline-flex items-center gap-2 rounded-full border border-line bg-paper-raised px-3 py-1 text-xs font-medium text-slate-soft">
             انتخاب واحد نسخه جدید
           </span>
-          <h1 className="font-display mt-5 text-4xl font-bold leading-[1.15] tracking-tight text-ink sm:text-5xl">
-            برنامه ترمت رو
-            <br />
-            <span className="relative inline-block">
-              بکش، رها کن، تمام
-              <svg
-                className="absolute -bottom-1 left-0 w-full text-marker"
-                viewBox="0 0 300 12"
-                fill="none"
-                preserveAspectRatio="none"
-              >
-                <path d="M2 8C60 2 240 2 298 8" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
-              </svg>
-            </span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-md text-base leading-8 text-slate sm:text-lg lg:mr-0">
+
+          {/* Title lives in its own centered box, independent of the surrounding alignment */}
+          <div className="text-center">
+            <h1 className="font-display mt-5 text-4xl font-bold leading-[1.15] tracking-tight text-ink sm:text-5xl">
+              برنامه ترمت رو
+              <br />
+              <span className="relative inline-block">
+                بکش، رها کن، تمام
+                <svg
+                  className="absolute -bottom-1 left-0 w-full text-marker"
+                  viewBox="0 0 300 12"
+                  fill="none"
+                  preserveAspectRatio="none"
+                >
+                  <path d="M2 8C60 2 240 2 298 8" stroke="currentColor" strokeWidth="5" strokeLinecap="round" />
+                </svg>
+              </span>
+            </h1>
+          </div>
+
+          <p className="mx-auto mt-6 max-w-md text-justify text-base leading-8 text-slate sm:text-lg lg:mr-0">
             دروس ترم رو روی تقویم هفتگی بچین، تداخل‌ها رو یه نگاه ببین، و با چند تا اولویت ساده بذار خودمون بهترین چینش رو براش پیدا کنیم.
           </p>
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
@@ -60,22 +66,18 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Signature: mini weekly grid with blocks snapping in */}
+        {/* Signature: mini weekly timetable — days as rows, hours as columns, blocks snap in */}
         <div className="relative">
           <div className="rounded-2xl border border-line bg-paper-raised p-4 shadow-xl shadow-ink/[0.06] sm:p-5">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="font-mono-num text-xs text-slate-soft">۶:۰۰ – ۲۰:۰۰</span>
-              <span className="text-xs font-medium text-slate-soft">هفته اول</span>
-            </div>
             <div className="grid grid-cols-8 gap-1">
               <div />
-              {DAYS.map((d) => (
-                <div key={d} className="pb-1 text-center text-[11px] font-bold text-slate-soft">
-                  {d}
+              {HOUR_COLS.map((h) => (
+                <div key={h} className="font-mono-num pb-1 text-center text-[10px] text-slate-soft">
+                  {h}
                 </div>
               ))}
-              {Array.from({ length: 6 }).map((_, row) => (
-                <RowCells key={row} row={row} mounted={mounted} />
+              {DAYS.map((d, dayIdx) => (
+                <DayRow key={d} day={d} dayIdx={dayIdx} mounted={mounted} />
               ))}
             </div>
           </div>
@@ -96,19 +98,19 @@ export default function Hero() {
   );
 }
 
-function RowCells({ row, mounted }) {
-  const delayBase = 200 + row * 150;
+function DayRow({ day, dayIdx, mounted }) {
+  const delayBase = 200 + dayIdx * 100;
   return (
     <>
-      <div className="font-mono-num flex items-center justify-end pr-1 text-[10px] text-slate-soft">
-        {(6 + row * 2).toString().padStart(2, "0")}
+      <div className="flex items-center justify-end pr-1 text-[11px] font-bold text-slate-soft">
+        {day}
       </div>
-      {DAYS.map((_, dayIdx) => {
-        const block = BLOCKS.find((b) => b.row === row + 1 && b.day === dayIdx);
+      {HOUR_COLS.map((_, colIdx) => {
+        const block = BLOCKS.find((b) => b.day === dayIdx && b.hourCol === colIdx);
         if (block) {
           return (
             <div
-              key={dayIdx}
+              key={colIdx}
               className="rounded-md transition-all ease-out"
               style={{
                 gridColumn: `span ${block.span} / span ${block.span}`,
@@ -123,11 +125,11 @@ function RowCells({ row, mounted }) {
           );
         }
         const covered = BLOCKS.some(
-          (b) => b.row === row + 1 && dayIdx > b.day && dayIdx < b.day + b.span
+          (b) => b.day === dayIdx && colIdx > b.hourCol && colIdx < b.hourCol + b.span
         );
         if (covered) return null;
         return (
-          <div key={dayIdx} className="h-[26px] rounded-md border border-dashed border-line" />
+          <div key={colIdx} className="h-[26px] rounded-md border border-dashed border-line" />
         );
       })}
     </>

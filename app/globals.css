@@ -1,57 +1,71 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
-  --paper: #fbfaf7;
-  --paper-raised: #ffffff;
-  --ink: #1d1b18;
-  --slate: #5f6164;
-  --slate-soft: #7d7f84;
-  --line: #e8e4da;
-  --marker: #fdde59;
-  --marker-ink: #55490a;
-  --open-slot: #dff6e4;
-  --conflict: #cf4a4a;
+  /* Termino design tokens */
+  --ink: #14213d;          /* deep navy — headings, dark surfaces */
+  --paper: #f5f6fa;        /* cool paper — page background */
+  --paper-raised: #ffffff; /* card surfaces */
+  --marker: #f7930a;       /* amber highlighter — primary accent / CTA */
+  --marker-ink: #14213d;   /* text on amber */
+  --slate: #4a5568;        /* body text */
+  --slate-soft: #6c7688;   /* muted text / icons — darkened for contrast */
+  --open-slot: #06a893;    /* free time / success */
+  --conflict: #ea3a1e;     /* schedule conflict */
+  --line: #e2e5ee;         /* hairline borders */
+
+  color-scheme: light;
 }
 
-html {
-  scroll-behavior: smooth;
+.dark {
+  --ink: #eef0f6;          /* light text on dark surfaces */
+  --paper: #10141f;        /* deep navy-black — page background */
+  --paper-raised: #1a2030; /* card surfaces */
+  --marker: #ffbc3d;       /* brighter amber for dark backgrounds */
+  --marker-ink: #10141f;   /* text on amber stays dark for contrast */
+  --slate: #c2c8d8;        /* body text */
+  --slate-soft: #7d8698;   /* muted text */
+  --open-slot: #2fe0c2;    /* free time / success, brighter for dark bg */
+  --conflict: #ff6b52;     /* schedule conflict, brighter for dark bg */
+  --line: #2a3145;         /* hairline borders */
+
+  color-scheme: dark;
+}
+
+/* Applied briefly on <html> during a theme switch for a smooth, site-wide crossfade */
+.theme-transition,
+.theme-transition * {
+  transition: background-color 420ms ease, border-color 420ms ease, color 420ms ease,
+    fill 420ms ease, box-shadow 420ms ease !important;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-marker: var(--marker);
+  --color-marker-ink: var(--marker-ink);
+  --color-slate: var(--slate);
+  --color-slate-soft: var(--slate-soft);
+  --color-open-slot: var(--open-slot);
+  --color-conflict: var(--conflict);
+  --color-line: var(--line);
+  --font-display: var(--font-vazirmatn);
+  --font-body: var(--font-vazirmatn);
+  --font-mono: var(--font-vazirmatn);
 }
 
 body {
-  font-family: var(--font-vazirmatn), 'Tahoma', sans-serif;
   background: var(--paper);
-  color: var(--ink);
+  color: var(--slate);
+  font-family: var(--font-body), sans-serif;
+  transition: background-color 420ms ease, color 420ms ease;
 }
 
-.font-display {
-  font-family: var(--font-vazirmatn), 'Tahoma', sans-serif;
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display), var(--font-body), sans-serif;
 }
 
 .font-mono-num {
-  font-family: var(--font-inter), monospace;
+  font-family: var(--font-mono), monospace;
+  font-variant-numeric: tabular-nums;
 }
-
-.bg-paper { background-color: var(--paper); }
-.bg-paper-raised { background-color: var(--paper-raised); }
-.bg-ink { background-color: var(--ink); }
-.bg-marker { background-color: var(--marker); }
-.bg-open-slot { background-color: var(--open-slot); }
-.bg-conflict { background-color: var(--conflict); }
-
-.text-ink { color: var(--ink); }
-.text-slate { color: var(--slate); }
-.text-slate-soft { color: var(--slate-soft); }
-.text-marker { color: var(--marker); }
-.text-marker-ink { color: var(--marker-ink); }
-.text-open-slot { color: var(--open-slot); }
-.text-conflict { color: var(--conflict); }
-.text-paper { color: var(--paper); }
-
-.border-line { border-color: var(--line); }
-.border-ink { border-color: var(--ink); }
-
-.shadow-ink\/5 { box-shadow: 0 10px 30px rgba(29, 27, 24, 0.05); }
-.shadow-ink\/\[0\.06\] { box-shadow: 0 18px 55px rgba(29, 27, 24, 0.06); }
-.shadow-ink\/\[0\.04\] { box-shadow: 0 12px 35px rgba(29, 27, 24, 0.04); }
