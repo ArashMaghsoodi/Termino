@@ -8,18 +8,19 @@ const RANGE_START = 6;
 const RANGE_END = 20;
 const RANGE_HOURS = RANGE_END - RANGE_START;
 const HOUR_LABELS = [6, 8, 10, 12, 14, 16, 18, 20];
-const DAY_LABEL_WIDTH = 58; // px — fixed column width for full weekday names
+const DAY_LABEL_WIDTH = 35; // px — fixed column width for full weekday names
 const DAY_LABEL_GAP = 4; // px — matches Tailwind's gap-1
 
 const UNITS = [
-  { id: "math2", name: "ریاضی ۲", prof: "دکتر رضایی", day: 0, start: 8, end: 10, color: "var(--marker)" },
-  { id: "prog", name: "برنامه‌سازی پیشرفته", prof: "دکتر سعیدی", day: 0, start: 8, end: 10, color: "var(--open-slot)" },
-  { id: "phys2", name: "فیزیک ۲", prof: "دکتر کریمی", day: 2, start: 10, end: 12, color: "var(--open-slot)" },
-  { id: "stats", name: "آمار و احتمال", prof: "دکتر نوری", day: 1, start: 13, end: 15, color: "var(--marker)" },
-  { id: "lang", name: "زبان تخصصی", prof: "دکتر احمدی", day: 4, start: 9, end: 11, color: "var(--open-slot)" },
-  { id: "logic", name: "مدار منطقی", prof: "دکتر صادقی", day: 5, start: 14, end: 17, color: "var(--marker)" },
-  { id: "net", name: "شبکه‌های کامپیوتری", prof: "دکتر محمدی", day: 3, start: 11, end: 13, color: "var(--open-slot)" },
-  { id: "test", name: "آزمون", prof: "دکتر محمدی", day: 3, start: 11, end: 13, color: "var(--open-slot)" },
+  { id: "math2", name: "ریاضی ۲", prof: "سعید رضایی", day: 0, start: 8, end: 10, color: "var(--deep-blue)" },
+  { id: "prog", name: "برنامه‌سازی پیشرفته", prof: "حسین سعیدی", day: 0, start: 8.75, end: 11.5, color: "var(--teal)" },
+  { id: "phys2", name: "فیزیک ۲", prof: "علیرضا کریمی", day: 2, start: 14, end: 16, color: "var(--deep-orange)" },
+  { id: "stats", name: "آمار و احتمال", prof: "محمد نوری", day: 1, start: 9.5, end: 12.5, color: "var(--amber)" },
+  { id: "lang", name: "زبان تخصصی", prof: "محمدرضا احمدی", day: 4, start: 9, end: 11, color: "var(--teal)" },
+  { id: "logic", name: "مدار منطقی", prof: "امیر صادقی", day: 5, start: 15.5, end: 17.5, color: "var(--deep-purple)" },
+  { id: "net", name: "شبکه‌های کامپیوتری", prof: "محمدمهدی محمدی", day: 3, start: 11, end: 13, color: "var(--deep-orange)" },
+  { id: "math1", name: "ریاضی ۱", prof: "رضا میرانی", day: 3, start: 11, end: 13, color: "var(--deep-blue)" },
+  { id: "ctrl", name: "کنترل خطی", prof: "احمدرضا خدابنده‌لو", day: 0, start: 10, end: 15, color: "var(--amber)" },
 ];
 
 const AUTO_PLAY_ID = "math2";
@@ -33,24 +34,46 @@ function timesOverlap(aStart, aEnd, bStart, bEnd) {
   return aStart < bEnd && bStart < aEnd;
 }
 
-// Groups placed units on the same day into overlap clusters so conflicting
-// blocks can be laid out side-by-side (split row height) instead of stacking.
+// Assign each unit to the first available horizontal lane that does not
+// overlap with the units already placed in that lane. This keeps truly
+// non-conflicting blocks on the same layer while still creating extra lanes
+// when a unit overlaps with several others in the same day.
 function computeDayLayout(dayUnits) {
-  const groups = [];
-  dayUnits.forEach((u) => {
-    const group = groups.find((g) =>
-      g.some((m) => timesOverlap(u.start, u.end, m.start, m.end))
-    );
-    if (group) group.push(u);
-    else groups.push([u]);
+  const sortedUnits = [...dayUnits].sort((a, b) => {
+    if (a.start !== b.start) return a.start - b.start;
+    if (a.end !== b.end) return a.end - b.end;
+    return a.id.localeCompare(b.id);
+  });
+
+  const lanes = [];
+  const laneAssignments = new Map();
+
+  sortedUnits.forEach((u) => {
+    let assignedLane = -1;
+
+    for (let laneIndex = 0; laneIndex < lanes.length; laneIndex += 1) {
+      const lane = lanes[laneIndex];
+      const hasOverlap = lane.some((m) => timesOverlap(u.start, u.end, m.start, m.end));
+      if (!hasOverlap) {
+        assignedLane = laneIndex;
+        lane.push(u);
+        break;
+      }
+    }
+
+    if (assignedLane === -1) {
+      lanes.push([u]);
+      assignedLane = lanes.length - 1;
+    }
+
+    laneAssignments.set(u.id, assignedLane);
   });
 
   const layout = {};
-  groups.forEach((group) => {
-    group.forEach((u, i) => {
-      layout[u.id] = { slot: i, of: group.length };
-    });
+  laneAssignments.forEach((slot, id) => {
+    layout[id] = { slot, of: lanes.length };
   });
+
   return layout;
 }
 
@@ -58,7 +81,10 @@ export default function HeroCalendarDemo() {
   const [placedIds, setPlacedIds] = useState([]);
   const [placedOrder, setPlacedOrder] = useState([]); // order for stable side-by-side layout
   const [enteringIds, setEnteringIds] = useState(new Set());
-  const [shakeIds, setShakeIds] = useState(new Set());
+  const [activeConflictIds, setActiveConflictIds] = useState(new Set());
+  const [conflictPulse, setConflictPulse] = useState(0);
+  const [conflictOffset, setConflictOffset] = useState(0);
+  const [conflictGlow, setConflictGlow] = useState(0);
   const [removalSelectedId, setRemovalSelectedId] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [autoPlayHint, setAutoPlayHint] = useState(false);
@@ -78,25 +104,32 @@ export default function HeroCalendarDemo() {
     [placedIds]
   );
 
-  const conflicts = useMemo(() => {
+  const conflictInfo = useMemo(() => {
     const byDay = {};
     placedUnits.forEach((u) => {
       byDay[u.day] = byDay[u.day] || [];
       byDay[u.day].push(u);
     });
+
     const conflictSet = new Set();
+    let pairCount = 0;
+
     Object.values(byDay).forEach((dayUnits) => {
       for (let i = 0; i < dayUnits.length; i++) {
         for (let j = i + 1; j < dayUnits.length; j++) {
           if (timesOverlap(dayUnits[i].start, dayUnits[i].end, dayUnits[j].start, dayUnits[j].end)) {
             conflictSet.add(dayUnits[i].id);
             conflictSet.add(dayUnits[j].id);
+            pairCount += 1;
           }
         }
       }
     });
-    return conflictSet;
+
+    return { ids: conflictSet, pairCount };
   }, [placedUnits]);
+
+  const conflicts = conflictInfo.ids;
 
   const dayLayouts = useMemo(() => {
     const out = {};
@@ -124,18 +157,62 @@ export default function HeroCalendarDemo() {
     });
   }
 
-  // trigger shake on whichever ids are freshly conflicted
+  // Trigger a single synchronized shake across every currently conflicting block.
   const prevConflictsRef = useRef(new Set());
   useEffect(() => {
+    if (conflicts.size === 0) {
+      setActiveConflictIds(new Set());
+      setConflictOffset(0);
+      prevConflictsRef.current = new Set();
+      return;
+    }
+
     const newlyConflicted = [...conflicts].filter((id) => !prevConflictsRef.current.has(id));
     if (newlyConflicted.length) {
-      setShakeIds(new Set(newlyConflicted));
-      const t = setTimeout(() => setShakeIds(new Set()), 600);
-      prevConflictsRef.current = conflicts;
-      return () => clearTimeout(t);
+      const nextActive = new Set(conflicts);
+      setActiveConflictIds(nextActive);
+      setConflictPulse((prev) => prev + 1);
+      const t = window.setTimeout(() => setActiveConflictIds(new Set()), 620);
+      prevConflictsRef.current = new Set(conflicts);
+      return () => window.clearTimeout(t);
     }
-    prevConflictsRef.current = conflicts;
+
+    prevConflictsRef.current = new Set(conflicts);
   }, [conflicts]);
+
+  useEffect(() => {
+    if (activeConflictIds.size === 0) {
+      setConflictOffset(0);
+      setConflictGlow(0);
+      return;
+    }
+
+    let frameId = 0;
+    let start = null;
+    const duration = 520;
+
+    const animate = (timestamp) => {
+      if (start === null) start = timestamp;
+      const elapsed = timestamp - start;
+      const progress = Math.min(1, elapsed / duration);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const amplitude = (1 - eased) * 1.6;
+      const wobble = Math.sin(progress * Math.PI * 3.2) * amplitude;
+      const pulse = Math.sin(progress * Math.PI * 2.2) * 0.16 + 0.84;
+      setConflictOffset(wobble);
+      setConflictGlow(pulse);
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(animate);
+      } else {
+        setConflictOffset(0);
+        setConflictGlow(0);
+      }
+    };
+
+    frameId = window.requestAnimationFrame(animate);
+    return () => window.cancelAnimationFrame(frameId);
+  }, [conflictPulse, activeConflictIds.size]);
 
   function removeUnit(id) {
     hasInteracted.current = true;
@@ -149,7 +226,9 @@ export default function HeroCalendarDemo() {
     setPlacedIds([]);
     setPlacedOrder([]);
     setRemovalSelectedId(null);
-    setShakeIds(new Set());
+    setActiveConflictIds(new Set());
+    setConflictOffset(0);
+    setConflictGlow(0);
   }
 
   // Soft auto-play hint shortly after mount if the visitor hasn't touched anything yet.
@@ -210,7 +289,7 @@ export default function HeroCalendarDemo() {
     };
   }, []);
 
-  const conflictCount = conflicts.size / 2;
+  const conflictCount = conflictInfo.pairCount;
   let statusText = null;
   if (conflictCount > 0) statusText = `${toPersianNum(conflictCount)} تداخل پیدا شد`;
   else if (placedUnits.length > 0) statusText = "بدون تداخل";
@@ -218,7 +297,7 @@ export default function HeroCalendarDemo() {
   return (
     <div className="relative" ref={cardRef}>
       <div
-        className={`rounded-2xl border bg-paper-raised p-4 shadow-xl shadow-ink/[0.06] transition-colors sm:p-5 ${
+        className={`rounded-2xl border bg-paper-raised p-4 shadow-xl shadow-slate-soft/[0.06] transition-colors sm:p-5 ${
           dragOver ? "border-marker" : "border-line"
         }`}
       >
@@ -349,9 +428,15 @@ export default function HeroCalendarDemo() {
                     {dayUnits.map((u) => {
                       const isConflicted = conflicts.has(u.id);
                       const isEntering = enteringIds.has(u.id);
-                      const isShaking = shakeIds.has(u.id);
+                      const isShaking = activeConflictIds.has(u.id);
                       const isSelected = removalSelectedId === u.id;
                       const { slot = 0, of = 1 } = layout[u.id] || {};
+                      const shakeTransform = isShaking
+                        ? `translateX(${conflictOffset}px) rotate(${conflictOffset * 0.15}deg) scale(${1 + conflictGlow * 0.008})`
+                        : "none";
+                      const conflictBoxShadow = isShaking
+                        ? `0 0 0 1px rgba(234, 58, 30, ${0.2 + conflictGlow * 0.12}), 0 10px 24px -14px rgba(234, 58, 30, ${0.18 + conflictGlow * 0.12})`
+                        : undefined;
                       return (
                         <div
                           key={u.id}
@@ -359,17 +444,17 @@ export default function HeroCalendarDemo() {
                             e.stopPropagation();
                             setRemovalSelectedId((prev) => (prev === u.id ? null : u.id));
                           }}
-                          className={`group absolute rounded-md ring-2 transition-all ${
+                          className={`group absolute rounded-md ring-2 transition-[transform,box-shadow,opacity] duration-200 ${
                             isEntering ? "animate-pop-in" : ""
-                          } ${isShaking ? "animate-shake" : ""} ${
-                            isConflicted ? "ring-conflict" : "ring-transparent"
-                          }`}
+                          } ${isConflicted ? "ring-conflict" : "ring-transparent"}`}
                           style={{
                             left: `${((u.start - RANGE_START) / RANGE_HOURS) * 100}%`,
                             width: `${((u.end - u.start) / RANGE_HOURS) * 100}%`,
                             top: `${(slot / of) * 100}%`,
                             height: `${100 / of}%`,
                             background: u.color,
+                            transform: shakeTransform,
+                            boxShadow: conflictBoxShadow,
                           }}
                         >
                           <span

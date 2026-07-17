@@ -3,7 +3,7 @@ import HeroCalendarDemo from "./HeroCalendarDemo";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="mx-auto max-w-4xl px-5 pb-10 pt-16 text-center sm:px-8 sm:pt-24">
+      <div className="mx-auto max-w-4xl px-5 pb-10 pt-8 text-center sm:px-8 sm:pt-12">
         <span className="inline-flex items-center gap-2 rounded-full border border-line bg-paper-raised px-3 py-1 text-xs font-medium text-slate-soft">
           انتخاب واحد نسخه جدید
         </span>
@@ -28,7 +28,7 @@ export default function Hero() {
         </div>
 
         <p className="mx-auto mt-6 max-w-md text-justify text-base leading-8 text-slate sm:text-lg">
-          دروس ترم رو روی تقویم هفتگی بچین، تداخل‌ها رو یه نگاه ببین، و با چند تا اولویت ساده بذار خودمون بهترین چینش رو براش پیدا کنیم.
+          دروس ترم رو روی تقویم هفتگی بچین، تداخل‌ها رو با یه نگاه ببین، یا فقط چندتا اولویت ساده بذار تا خودمون بهترین چینش رو براش پیدا کنیم.
         </p>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <a
@@ -47,7 +47,7 @@ export default function Hero() {
       </div>
 
       {/* Signature: fully interactive weekly-timetable demo with mock data */}
-      <div className="mx-auto max-w-3xl px-5 pb-20 sm:px-8 lg:pb-28">
+      <div className="mx-auto max-w-3xl px-5 pb-12 sm:px-8 lg:pb-12">
         <HeroCalendarDemo />
         <p className="mt-3 text-center text-xs text-slate-soft">
           روی هر واحد کلیک کن یا بکشش تو تقویم — این فقط یه دموئه، خودت امتحانش کن

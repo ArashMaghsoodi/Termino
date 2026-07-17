@@ -24,6 +24,29 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleAnchorClick = (event, href) => {
+    if (!href.startsWith("#")) return;
+
+    event.preventDefault();
+    const targetId = href.slice(1);
+    const target = document.getElementById(targetId);
+
+    if (target) {
+      const offset = 88;
+      const top = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
+
+    if (window.history.pushState) {
+      window.history.pushState(null, "", href);
+    } else {
+      window.location.hash = href;
+    }
+
+    setMenuOpen(false);
+    setMobileOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-paper/85 backdrop-blur-sm">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
@@ -41,6 +64,7 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
             <a
               key={link.href}
               href={link.href}
+              onClick={(event) => handleAnchorClick(event, link.href)}
               className="text-sm font-medium text-slate transition-colors hover:text-ink"
             >
               {link.label}
@@ -116,7 +140,12 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
         <div className="border-t border-line bg-paper px-5 py-4 md:hidden">
           <div className="flex flex-col gap-3">
             {NAV_LINKS.map((link) => (
-              <a key={link.href} href={link.href} className="py-1.5 text-sm font-medium text-slate">
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(event) => handleAnchorClick(event, link.href)}
+                className="py-1.5 text-sm font-medium text-slate"
+              >
                 {link.label}
               </a>
             ))}

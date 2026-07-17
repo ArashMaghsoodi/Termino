@@ -11,7 +11,14 @@
   --slate-soft: #6c7688;   /* muted text / icons — darkened for contrast */
   --open-slot: #06a893;    /* free time / success */
   --conflict: #ea3a1e;     /* schedule conflict */
-  --line: #e2e5ee;         /* hairline borders */
+  --line: #d9dbdf;         /* hairline borders */
+
+  /* Colors */
+  --deep-purple: #8E24AA;
+  --deep-blue: #1E88E5;
+  --teal: #26A69A;
+  --amber: #F9A825;
+  --deep-orange: #F57C00;
 
   color-scheme: light;
 }
@@ -54,11 +61,20 @@
   --font-mono: var(--font-vazirmatn);
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 body {
   background: var(--paper);
   color: var(--slate);
   font-family: var(--font-body), sans-serif;
   transition: background-color 420ms ease, color 420ms ease;
+}
+
+section[id] {
+  scroll-margin-top: 5rem;
 }
 
 .sidebar-scroll {
@@ -110,14 +126,16 @@ h1, h2, h3, h4, .font-display {
 }
 
 @keyframes shake {
-  10%, 90% { transform: translateX(-1px); }
-  20%, 80% { transform: translateX(2px); }
-  30%, 50%, 70% { transform: translateX(-4px); }
-  40%, 60% { transform: translateX(4px); }
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
 }
 
 .animate-shake {
-  animation: shake 550ms ease;
+  animation: shake 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation-fill-mode: both;
 }
 
 @keyframes pop-in {
