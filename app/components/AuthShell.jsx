@@ -5,13 +5,13 @@ export default function AuthShell({ children }) {
   return (
     <div className="relative flex min-h-screen flex-col">
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.5]"
+        className="pointer-events-none absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px)",
+            "linear-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1px)",
           backgroundSize: "42px 42px",
-          maskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
-          WebkitMaskImage: "radial-gradient(ellipse 60% 50% at 50% 0%, black 0%, transparent 70%)",
+          maskImage: "radial-gradient(ellipse 70% 55% at 50% 0%, black 0%, transparent 75%)",
+          WebkitMaskImage: "radial-gradient(ellipse 70% 55% at 50% 0%, black 0%, transparent 75%)",
         }}
       />
 
