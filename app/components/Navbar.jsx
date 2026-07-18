@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ChevronDown, User, Settings, LogOut, Menu, X } from "lucide-react";
+import { ChevronDown, User, Settings, LogOut, Menu, X, Sparkles, CirclePlay } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
-  { href: "#features", label: "امکانات" },
-  { href: "#how-it-works", label: "روش کار" },
+  { href: "#features", label: "امکانات", icon: Sparkles },
+  { href: "#how-it-works", label: "روش کار", icon: CirclePlay },
 ];
 
 export default function Navbar({ isLoggedIn = false, user = { name: "آرش", avatar: null } }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobilePanelVisible, setMobilePanelVisible] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -23,6 +24,20 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!mobileOpen) {
+      const t = window.setTimeout(() => setMobilePanelVisible(false), 220);
+      return () => window.clearTimeout(t);
+    }
+
+    setMobilePanelVisible(true);
+    return undefined;
+  }, [mobileOpen]);
+
+  const toggleMobileMenu = () => {
+    setMobileOpen((v) => !v);
+  };
 
   const handleAnchorClick = (event, href) => {
     if (!href.startsWith("#")) return;
@@ -45,6 +60,7 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
 
     setMenuOpen(false);
     setMobileOpen(false);
+    setMobilePanelVisible(false);
   };
 
   return (
@@ -78,7 +94,7 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
             <div className="relative" ref={menuRef}>
               <button
                 onClick={() => setMenuOpen((v) => !v)}
-                className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-paper-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marker"
+                className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-paper-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-marker "
                 aria-haspopup="menu"
                 aria-expanded={menuOpen}
               >
@@ -95,17 +111,20 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
                 </span>
               </button>
 
-              {menuOpen && (
-                <div
-                  role="menu"
-                  className="absolute left-0 top-[calc(100%+8px)] w-48 overflow-hidden rounded-xl border border-line bg-paper-raised py-1 shadow-lg shadow-ink/5"
-                >
-                  <DropdownItem icon={User} label="مشاهده پروفایل" href="/dashboard/profile" />
-                  <DropdownItem icon={Settings} label="تنظیمات" href="/dashboard/settings" />
-                  <div className="my-1 h-px bg-line" />
-                  <DropdownItem icon={LogOut} label="خروج" href="/logout" tone="conflict" />
-                </div>
-              )}
+              <div
+                role="menu"
+                aria-hidden={!menuOpen}
+                className={`absolute left-0 top-[calc(100%+8px)] w-48 origin-top overflow-hidden rounded-xl border border-line bg-paper-raised py-1 shadow-lg shadow-ink/5 transition-all duration-200 ease-out ${
+                  menuOpen
+                    ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
+                    : "pointer-events-none -translate-y-1 scale-95 opacity-0"
+                }`}
+              >
+                <DropdownItem icon={User} label="مشاهده پروفایل" href="/dashboard/profile" />
+                <DropdownItem icon={Settings} label="تنظیمات" href="/dashboard/settings" />
+                <div className="my-1 h-px bg-line" />
+                <DropdownItem icon={LogOut} label="خروج" href="/logout" tone="conflict" />
+              </div>
             </div>
           ) : (
             <>
@@ -128,7 +147,7 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
         {/* Mobile toggle */}
         <button
           className="flex h-9 w-9 items-center justify-center rounded-lg text-ink md:hidden"
-          onClick={() => setMobileOpen((v) => !v)}
+          onClick={toggleMobileMenu}
           aria-label="باز کردن منو"
         >
           {mobileOpen ? <X size={22} /> : <Menu size={22} />}
@@ -136,40 +155,58 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
       </nav>
 
       {/* Mobile panel */}
-      {mobileOpen && (
-        <div className="border-t border-line bg-paper px-5 py-4 md:hidden">
-          <div className="flex flex-col gap-3">
-            {NAV_LINKS.map((link) => (
+      <div
+        className={`overflow-hidden border-t border-line bg-paper/85 px-5 backdrop-blur-sm transition-all duration-300 ease-out md:hidden ${
+          mobilePanelVisible ? "py-4 max-h-96 opacity-100 translate-y-0" : "max-h-0 opacity-0 -translate-y-2 pointer-events-none"
+        }`}
+      >
+        <div className="flex flex-col gap-2">
+          {NAV_LINKS.map((link) => {
+            const Icon = link.icon;
+            return (
               <a
                 key={link.href}
                 href={link.href}
                 onClick={(event) => handleAnchorClick(event, link.href)}
-                className="py-1.5 text-sm font-medium text-slate"
+                className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-slate transition-colors hover:bg-paper/80 hover:text-ink"
               >
-                {link.label}
+                <Icon size={16} className="shrink-0 text-slate-soft" />
+                <span>{link.label}</span>
               </a>
-            ))}
-            <div className="my-1 h-px bg-line" />
-            {isLoggedIn ? (
-              <>
-                <a href="/dashboard/profile" className="py-1.5 text-sm font-medium text-slate">مشاهده پروفایل</a>
-                <a href="/dashboard/settings" className="py-1.5 text-sm font-medium text-slate">تنظیمات</a>
-                <a href="/logout" className="py-1.5 text-sm font-medium text-conflict">خروج</a>
-              </>
-            ) : (
-              <>
-                <a href="/login" className="py-1.5 text-sm font-medium text-slate">ورود</a>
-                <a
-                  href="/signup"
-                  className="rounded-lg bg-ink px-4 py-2 text-center text-sm font-medium text-paper"
-                >
-                  ثبت‌نام
-                </a>
-              </>
-            )}
-          </div>
+            );
+          })}
+          <div className="my-1 h-px bg-line" />
+          {isLoggedIn ? (
+            <>
+              <a href="/dashboard/profile" className="flex items-center gap-2 rounded-lg px-2 py-1 text-sm font-medium text-slate transition-colors hover:bg-paper/80 hover:text-ink">
+                <User size={16} className="shrink-0 text-slate-soft" />
+                <span>مشاهده پروفایل</span>
+              </a>
+              <a href="/dashboard/settings" className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate transition-colors hover:bg-paper/80 hover:text-ink">
+                <Settings size={16} className="shrink-0 text-slate-soft" />
+                <span>تنظیمات</span>
+              </a>
+              <a href="/logout" className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-conflict transition-colors hover:bg-paper/80">
+                <LogOut size={16} className="shrink-0" />
+                <span>خروج</span>
+              </a>
+            </>
+          ) : (
+            <>
+              <a href="/login" className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-medium text-slate transition-colors hover:bg-paper/80 hover:text-ink">
+                <User size={16} className="shrink-0 text-slate-soft" />
+                <span>ورود</span>
+              </a>
+              <a
+                href="/signup"
+                className="rounded-lg bg-ink px-4 py-2 text-center text-sm font-medium text-paper"
+              >
+                ثبت‌نام
+              </a>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </header>
   );
 }

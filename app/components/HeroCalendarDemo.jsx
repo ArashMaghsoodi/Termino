@@ -4,23 +4,29 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { X, RotateCcw, GripVertical } from "lucide-react";
 
 const DAYS = ["شنبه", "یکشنبه", "دوشنبه", "سه‌شنبه", "چهارشنبه", "پنجشنبه", "جمعه"];
-const RANGE_START = 6;
-const RANGE_END = 20;
+const RANGE_START = 8;
+const RANGE_END = 16;
 const RANGE_HOURS = RANGE_END - RANGE_START;
-const HOUR_LABELS = [6, 8, 10, 12, 14, 16, 18, 20];
+const HOUR_LABELS = [8, 9, 10, 11, 12, 13, 14, 15, 16];
 const DAY_LABEL_WIDTH = 35; // px — fixed column width for full weekday names
 const DAY_LABEL_GAP = 4; // px — matches Tailwind's gap-1
 
 const UNITS = [
-  { id: "math2", name: "ریاضی ۲", prof: "سعید رضایی", day: 0, start: 8, end: 10, color: "var(--deep-blue)" },
-  { id: "prog", name: "برنامه‌سازی پیشرفته", prof: "حسین سعیدی", day: 0, start: 8.75, end: 11.5, color: "var(--teal)" },
-  { id: "phys2", name: "فیزیک ۲", prof: "علیرضا کریمی", day: 2, start: 14, end: 16, color: "var(--deep-orange)" },
-  { id: "stats", name: "آمار و احتمال", prof: "محمد نوری", day: 1, start: 9.5, end: 12.5, color: "var(--amber)" },
-  { id: "lang", name: "زبان تخصصی", prof: "محمدرضا احمدی", day: 4, start: 9, end: 11, color: "var(--teal)" },
-  { id: "logic", name: "مدار منطقی", prof: "امیر صادقی", day: 5, start: 15.5, end: 17.5, color: "var(--deep-purple)" },
-  { id: "net", name: "شبکه‌های کامپیوتری", prof: "محمدمهدی محمدی", day: 3, start: 11, end: 13, color: "var(--deep-orange)" },
-  { id: "math1", name: "ریاضی ۱", prof: "رضا میرانی", day: 3, start: 11, end: 13, color: "var(--deep-blue)" },
-  { id: "ctrl", name: "کنترل خطی", prof: "احمدرضا خدابنده‌لو", day: 0, start: 10, end: 15, color: "var(--amber)" },
+  { id: "math2", name: "ریاضی ۲", prof: "سعید رضایی", day: 0, start: 8.5, end: 10, color: "var(--deep-blue)" },
+  { id: "prog", name: "برنامه‌سازی پیشرفته", prof: "حسین سعیدی", day: 0, start: 9.5, end: 12.25, color: "var(--teal)" },
+  { id: "phys2", name: "فیزیک ۲", prof: "علیرضا کریمی", day: 2, start: 12.75, end: 15, color: "var(--deep-orange)" },
+  { id: "stats", name: "آمار و احتمال", prof: "محمد نوری", day: 1, start: 9.25, end: 12, color: "var(--amber)" },
+  { id: "lang", name: "زبان تخصصی", prof: "محمدرضا احمدی", day: 4, start: 8.5, end: 10.5, color: "var(--teal)" },
+  { id: "logic", name: "مدار منطقی", prof: "امیر صادقی", day: 5, start: 13.25, end: 15.5, color: "var(--deep-purple)" },
+  { id: "net", name: "شبکه‌های کامپیوتری", prof: "محمدمهدی محمدی", day: 3, start: 10.75, end: 13, color: "var(--deep-orange)" },
+  { id: "math1", name: "ریاضی ۱", prof: "رضا میرانی", day: 1, start: 11.5, end: 14, color: "var(--deep-blue)" },
+  { id: "ctrl", name: "کنترل خطی", prof: "احمدرضا خدابنده‌لو", day: 0, start: 11.75, end: 14.25, color: "var(--amber)" },
+  { id: "elec1", name: "الکترونیک ۱", prof: "محمد حسینی", day: 1, start: 13.5, end: 15.75, color: "var(--deep-purple)" },
+  { id: "sig", name: "سیگنال و سیستم", prof: "علی محمدی", day: 3, start: 8.25, end: 10.5, color: "var(--teal)" },
+  { id: "comm", name: "مخابرات ۱", prof: "حسن رضایی", day: 4, start: 14, end: 15.75, color: "var(--deep-orange)" },
+  { id: "micro", name: "میکروپروسسور", prof: "امیر نوری", day: 5, start: 9.75, end: 12, color: "var(--amber)" },
+  { id: "em", name: "موج و میدان", prof: "سعید کریمی", day: 2, start: 13.5, end: 15.75, color: "var(--deep-blue)" },
+  { id: "digit", name: "مدارهای دیجیتال", prof: "رضا احمدی", day: 3, start: 12.25, end: 15.5, color: "var(--teal)" }
 ];
 
 const AUTO_PLAY_ID = "math2";
@@ -28,6 +34,17 @@ const AUTO_PLAY_ID = "math2";
 const PERSIAN_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
 function toPersianNum(n) {
   return String(n).replace(/[0-9]/g, (d) => PERSIAN_DIGITS[+d]);
+}
+
+function formatClockTime(value) {
+  const normalized = Number(value);
+  const hours = Math.floor(normalized);
+  const minutes = Math.round((normalized - hours) * 60);
+
+  const safeHours = minutes === 60 ? hours + 1 : hours;
+  const safeMinutes = minutes === 60 ? 0 : minutes;
+
+  return `${toPersianNum(safeHours)}:${toPersianNum(String(safeMinutes).padStart(2, "0"))}`;
 }
 
 function timesOverlap(aStart, aEnd, bStart, bEnd) {
@@ -303,7 +320,7 @@ export default function HeroCalendarDemo() {
       >
         <div className="mb-3 flex items-center justify-between gap-2">
           <span className="font-mono-num text-xs text-slate-soft">
-            {toPersianNum(RANGE_START)}:۰۰ – {toPersianNum(RANGE_END)}:۰۰
+            {toPersianNum(RANGE_START)}:۰۰ الی {toPersianNum(RANGE_END)}:۰۰
           </span>
           <div className="flex items-center gap-2">
             {statusText && (
@@ -332,7 +349,7 @@ export default function HeroCalendarDemo() {
           <div
             ref={sidebarListRef}
             dir="ltr"
-            className="relative order-2 flex flex-col overflow-y-auto overflow-x-visible rounded-xl border border-line/70 bg-paper/70 px-1.5 py-1.5 shadow-inner shadow-ink/[0.03] sm:order-1 sm:w-44 sm:flex-none sidebar-scroll"
+            className="relative order-2 flex flex-col overflow-y-auto overflow-x-visible rounded-xl border border-line/70 bg-paper/70 px-1.5 py-1.5 shadow-inner shadow-ink/[0.03] sm:order-1 sm:w-50 sm:flex-none sidebar-scroll"
             style={{ height: "300px" }}
             onScroll={updateScrollFades}
           >
@@ -346,7 +363,7 @@ export default function HeroCalendarDemo() {
             />
             <div className="relative z-10 flex flex-col gap-1.5 p-1.5">
               {availableUnits.length === 0 ? (
-                <p className="flex h-full items-center justify-center text-center text-xs text-slate-soft" dir="rtl" style={{ direction: "rtl" }}>
+                <p className="flex h-full sm:py-4 items-center justify-center text-center text-xs text-slate-soft" dir="rtl" style={{ direction: "rtl" }}>
                   همه واحدها چیده شدن!
                 </p>
               ) : (
@@ -368,7 +385,7 @@ export default function HeroCalendarDemo() {
                         {u.name}
                       </span>
                       <span className="block max-w-full truncate text-[10px] text-slate-soft" style={{ direction: "rtl", textOverflow: "ellipsis" }}>
-                        {DAYS[u.day]} {toPersianNum(u.start)}–{toPersianNum(u.end)}
+                        {DAYS[u.day]} {formatClockTime(u.start)}–{formatClockTime(u.end)}
                       </span>
                     </span>
                   </button>
