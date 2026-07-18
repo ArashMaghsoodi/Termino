@@ -52,43 +52,66 @@ function timesOverlap(aStart, aEnd, bStart, bEnd) {
 }
 
 // Assign each unit to the first available horizontal lane that does not
-// overlap with the units already placed in that lane. This keeps truly
-// non-conflicting blocks on the same layer while still creating extra lanes
-// when a unit overlaps with several others in the same day.
+// overlap with the units already placed in that lane. Units are first
+// grouped into overlap clusters (connected components of the "overlaps"
+// relation) so lane-splitting only ever affects units that actually
+// conflict with something — a unit with no conflicts anywhere in the day
+// always gets the full row, even if other units on that day are split.
 function computeDayLayout(dayUnits) {
-  const sortedUnits = [...dayUnits].sort((a, b) => {
-    if (a.start !== b.start) return a.start - b.start;
-    if (a.end !== b.end) return a.end - b.end;
-    return a.id.localeCompare(b.id);
-  });
+  const clusters = [];
 
-  const lanes = [];
-  const laneAssignments = new Map();
+  dayUnits.forEach((u) => {
+    const touching = clusters.filter((c) =>
+      c.some((m) => timesOverlap(u.start, u.end, m.start, m.end))
+    );
 
-  sortedUnits.forEach((u) => {
-    let assignedLane = -1;
-
-    for (let laneIndex = 0; laneIndex < lanes.length; laneIndex += 1) {
-      const lane = lanes[laneIndex];
-      const hasOverlap = lane.some((m) => timesOverlap(u.start, u.end, m.start, m.end));
-      if (!hasOverlap) {
-        assignedLane = laneIndex;
-        lane.push(u);
-        break;
-      }
+    if (touching.length === 0) {
+      clusters.push([u]);
+      return;
     }
 
-    if (assignedLane === -1) {
-      lanes.push([u]);
-      assignedLane = lanes.length - 1;
-    }
-
-    laneAssignments.set(u.id, assignedLane);
+    const merged = [u, ...touching.flat()];
+    const remaining = clusters.filter((c) => !touching.includes(c));
+    clusters.length = 0;
+    clusters.push(...remaining, merged);
   });
 
   const layout = {};
-  laneAssignments.forEach((slot, id) => {
-    layout[id] = { slot, of: lanes.length };
+
+  clusters.forEach((cluster) => {
+    const sortedUnits = [...cluster].sort((a, b) => {
+      if (a.start !== b.start) return a.start - b.start;
+      if (a.end !== b.end) return a.end - b.end;
+      return a.id.localeCompare(b.id);
+    });
+
+    const lanes = [];
+    const laneAssignments = new Map();
+
+    sortedUnits.forEach((u) => {
+      let assignedLane = -1;
+
+      for (let laneIndex = 0; laneIndex < lanes.length; laneIndex += 1) {
+        const lane = lanes[laneIndex];
+        const hasOverlap = lane.some((m) => timesOverlap(u.start, u.end, m.start, m.end));
+        if (!hasOverlap) {
+          assignedLane = laneIndex;
+          lane.push(u);
+          break;
+        }
+      }
+
+      if (assignedLane === -1) {
+        lanes.push([u]);
+        assignedLane = lanes.length - 1;
+      }
+
+      laneAssignments.set(u.id, assignedLane);
+    });
+
+    laneAssignments.forEach((slot, id) => {
+      layout[id] = { slot, of: lanes.length };
+    });
   });
 
   return layout;

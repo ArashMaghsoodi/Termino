@@ -27,7 +27,7 @@ export default function Navbar({ isLoggedIn = false, user = { name: "آرش", av
 
   useEffect(() => {
     if (!mobileOpen) {
-      const t = window.setTimeout(() => setMobilePanelVisible(false), 220);
+      const t = window.setTimeout(() => setMobilePanelVisible(false), 75);
       return () => window.clearTimeout(t);
     }
 
